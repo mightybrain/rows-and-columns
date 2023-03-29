@@ -1,0 +1,22 @@
+{
+  "name": "colored-tiles",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack",
+    "serve": "webpack-dev-server"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "css-loader": "^6.7.3",
+    "html-webpack-plugin": "^5.5.0",
+    "pug": "^3.0.2",
+    "pug-loader": "^2.4.0",
+    "style-loader": "^3.3.2",
+    "stylus": "^0.59.0",
+    "stylus-loader": "^7.1.0",
+    "webpack": "^5.76.3",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.13.1"
+  }
+}
