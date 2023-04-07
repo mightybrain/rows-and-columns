@@ -1,30 +1,30 @@
 export default class Cell {
   constructor({ coords }) {
     this._coords = coords;
-    this._brick = null;
-    this._detachedBrick = null;
+    this._tile = null;
+    this._detachedTile = null;
   }
 
-  render(ctx) {
-    if (this._brick) this._brick.render(ctx);
+  render() {
+    if (this._tile) this._tile.render();
   }
 
-  setBrick(brick) {
-    this._brick = brick;
-    const detachedBrick = this._detachedBrick;
-    this._detachedBrick = null;
-    return this._brick !== detachedBrick;
+  setTile(tile) {
+    this._tile = tile;
+    const detachedTile = this._detachedTile;
+    this._detachedTile = null;
+    return this._tile !== detachedTile;
   }
 
-  getBrick() {
-    return this._brick;
+  getTile() {
+    return this._tile;
   }
 
-  detachBrick() {
-    const brick = this._brick;
-    this._detachedBrick = brick;
-    this._brick = null;
-    return brick;
+  detachTile() {
+    const tile = this._tile;
+    this._detachedTile = tile;
+    this._tile = null;
+    return tile;
   }
 
   getCoords() {

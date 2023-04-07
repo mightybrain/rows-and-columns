@@ -1,12 +1,14 @@
 import Draw from './Draw';
 import Color from './Color';
 import OpenScene from './OpenScene';
+import AboutScene from './AboutScene';
 import CoreScene from './CoreScene';
 import ResultScene from './ResultScene';
 
 export default class SceneManager {
-	constructor({ canvas, assets, state }) {
+	constructor({ canvas, ctx, assets, state }) {
 		this._canvas = canvas;
+		this._ctx = ctx;
 		this._assets = assets;
 		this._state = state;
 
@@ -38,19 +40,20 @@ export default class SceneManager {
 		if (this._transitionOverlayOffsetX === -1) this._transitionOverlayOffsetX = 1;
 	}
 
-	render(ctx) {
-		if (this._currentScene) this._currentScene.render(ctx);
-		if (this._transitionOverlayOffsetX !== 1) this._renderTransitionOverlay(ctx);
+	render() {
+		if (this._currentScene) this._currentScene.render();
+		if (this._transitionOverlayOffsetX !== 1) this._renderTransitionOverlay();
 	}
 
-	_renderTransitionOverlay(ctx) {
+	_renderTransitionOverlay() {
 		const overlayPositionX = this._canvas.width * this._transitionOverlayOffsetX;
-		Draw.rect(ctx, overlayPositionX, 0, this._canvas.width, this._canvas.height, Color.grass.key)
+		Draw.rect(this._ctx, overlayPositionX, 0, this._canvas.width, this._canvas.height, Color.blueDeep.key)
 	}
 
 	_getScenesCommonProps() {
 		return {
 			canvas: this._canvas,
+			ctx: this._ctx,
 			assets: this._assets,
 			state: this._state,
 			sceneManager: this,
@@ -73,10 +76,10 @@ export default class SceneManager {
 		if (this._currentScene) this._currentScene.handleStartDragging(event);
 	}
 
-	handleMoveDragging(event) {
+	handleDragging(event) {
 		if (this._isInTransition()) return;
 
-		if (this._currentScene) this._currentScene.handleMoveDragging(event);
+		if (this._currentScene) this._currentScene.handleDragging(event);
 	}
 
 	handleEndDragging(event) {
@@ -87,6 +90,10 @@ export default class SceneManager {
 
 	showOpenScene() {
 		this._futureScene = new OpenScene(this._getScenesCommonProps());
+	}
+
+	showAboutScene() {
+		this._futureScene = new AboutScene(this._getScenesCommonProps());
 	}
 
 	showCoreScene() {

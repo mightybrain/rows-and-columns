@@ -1,30 +1,23 @@
 import Assets from './Assets';
 import State from './State';
 import SceneManager from './SceneManager';
-import Renderer from './Renderer';
+
+import YSDK from './YSDK';
 
 export default class Game {
 	constructor(canvas) {
 		this._canvas = canvas;
 		this._ctx = canvas.getContext('2d');
-		this._setRenderSize()
+		this._setRenderSize();
 
 		this._assets = new Assets();
-
-		this._state = new State({
-			assets: this._assets,
-		});
+		this._state = new State();
 
 		this._sceneManager = new SceneManager({
 			canvas: this._canvas,
+			ctx: this._ctx,
 			assets: this._assets,
 			state: this._state,
-		});
-
-		this._renderer = new Renderer({
-			canvas: this._canvas,
-			ctx: this._ctx,
-			sceneManager: this._sceneManager,
 		});
 
 		this._prevTimestamp = null;
@@ -36,6 +29,8 @@ export default class Game {
 
 	async _startGame() {
 		await this._assets.load();
+		//await this._state.loadPlayerStats();
+
 		this._sceneManager.showOpenScene();
 
 		requestAnimationFrame(timestamp => {
@@ -54,16 +49,21 @@ export default class Game {
 		this._sceneManager.update({ delta, prevFrameDuration, timestamp });
 		this._prevTimestamp = timestamp;
 
-		this._renderer.render();
+		this._render();
+	}
+
+	_render() {
+		this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+		this._sceneManager.render();
 	}
 
 	_addEventHandlers() {
 		this._canvas.addEventListener('click', event => this._handleClick(event))
 		this._canvas.addEventListener('mousedown', event => this._handleStartDragging(event))
-		window.addEventListener('mousemove', event => this._handleMoveDragging(event))
+		window.addEventListener('mousemove', event => this._handleDragging(event))
 		window.addEventListener('mouseup', event => this._handleEndDragging(event))
 		this._canvas.addEventListener('touchstart', event => this._handleStartDragging(event));
-		window.addEventListener('touchmove', event => this._handleMoveDragging(event));
+		window.addEventListener('touchmove', event => this._handleDragging(event));
 		window.addEventListener('touchend', event => this._handleEndDragging(event));
 		window.addEventListener('resize', () => this._setRenderSize());
 	}
@@ -88,11 +88,11 @@ export default class Game {
 		this._sceneManager.handleEndDragging({ position });
 	}
 
-	_handleMoveDragging(event) {
+	_handleDragging(event) {
 		if (!this._draggingStarted) return;
 		const { clientX: x, clientY: y } = event.touches?.[0] || event;
 		const position = this._transformClickPosition({ x, y });
-		this._sceneManager.handleMoveDragging({ position });
+		this._sceneManager.handleDragging({ position });
 	}
 
 	_transformClickPosition({ x, y }) {

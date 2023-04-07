@@ -2,14 +2,31 @@ import Draw from './Draw';
 import Color from './Color';
 
 export default class Tile {
-  constructor({ color, position }) {
+  constructor({ ctx, color, size, position }) {
+    this._ctx = ctx;
     this._color = color;
+    this._size = size;
     this._position = position;
     this._opacity = 1;
+    this._scaleFactor = 1;
   }
 
-  render(ctx) {
-    Draw.roundedRect(ctx, this._position.x, this._position.y, Tile.width, Tile.height, Tile.radius, this._color.key, this._opacity);
+  render() {
+    const width = this._size.width * this._scaleFactor;
+    const height = this._size.height * this._scaleFactor;
+    const positionX = this._position.x - (width - this._size.width) / 2;
+    const positionY = this._position.y - (height - this._size.height) / 2;
+    const radius = Tile.radius * this._scaleFactor;
+    
+    Draw.roundedRect(this._ctx, positionX, positionY, width, height, radius, this._color.key, this._opacity);
+  }
+
+  getScaleFactor() {
+    return this._scaleFactor;
+  }
+
+  setScaleFactor(scaleFactor) {
+    this._scaleFactor = scaleFactor;
   }
 
   getPosition() {
@@ -32,8 +49,6 @@ export default class Tile {
     this._opacity = opacity;
   }
 
-  static width = 95;
-  static height = 95;
   static radius = 30;
   static colors = [
     Color.blueNight,
@@ -45,9 +60,4 @@ export default class Tile {
     Color.orange,
     Color.yellow,
   ];
-
-  static getRandomBrickColor() {
-    const index = Random.getRandomFromRange(0, Tile.colors.length - 1);
-    return Tile.colors[index];
-  }
 }

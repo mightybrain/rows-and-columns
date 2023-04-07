@@ -1,36 +1,41 @@
 import Draw from './Draw';
-import Color from './Color';
 import Tile from './Tile';
 
 export default class LevelPreview {
-  constructor({ map }) {
+  constructor({ ctx, map }) {
+    this._ctx = ctx;
     this._map = map;
+
+    this._columnWidth = 0;
+    this._rowHeight = 0;
+    this._setMetrics();
   }
 
-  render(ctx) {
-    const width = LevelPreview.padding * 2 + this._map[0].length * LevelPreview.brickWidth + LevelPreview.gap * (this._map[0].length - 1);
-    const height = LevelPreview.padding * 2 + this._map.length * LevelPreview.brickHeight + LevelPreview.gap * (this._map.length - 1);
-
-    Draw.roundedRect(ctx, LevelPreview.positionX, LevelPreview.positionY, width, height, LevelPreview.radius, Color.blueDeep.key);
-
+  render() {
     this._map.forEach((row, y) => {
       row.forEach((colorId, x) => {
-        const brickPositionX = LevelPreview.positionX + LevelPreview.padding + (LevelPreview.brickWidth + LevelPreview.gap) * x;
-        const brickPositionY = LevelPreview.positionY + LevelPreview.padding + (LevelPreview.brickHeight + LevelPreview.gap) * y;
+        const tilePositionX = LevelPreview.positionX + (this._columnWidth + LevelPreview.gap) * x;
+        const tilePositionY = LevelPreview.positionY + (this._rowHeight + LevelPreview.gap) * y;
 
-        const brickColor = Tile.colors.find(color => color.id === colorId);
+        const tileColor = Tile.colors.find(color => color.id === colorId);
 
-        Draw.roundedRect(ctx, brickPositionX, brickPositionY, LevelPreview.brickWidth, LevelPreview.brickHeight, LevelPreview.brickRadius, brickColor.key);
+        Draw.roundedRect(this._ctx, tilePositionX, tilePositionY, this._columnWidth, this._rowHeight, LevelPreview.tileRadius, tileColor.key);
       });
     });
   }
 
-  static positionX = 21;
-  static positionY = 21;
-  static padding = 6;
+  _setMetrics() {
+    const xLength = this._map[0].length;
+    const yLength = this._map.length;
+
+    this._columnWidth = (LevelPreview.width - LevelPreview.gap * (xLength - 1)) / xLength;
+    this._rowHeight = (LevelPreview.height - LevelPreview.gap * (yLength - 1)) / yLength;
+  }
+
+  static width = 194;
+  static height = 194;
+  static positionX = 253;
+  static positionY = 40;
   static gap = 2;
-  static radius = 16;
-  static brickWidth = 26;
-  static brickHeight = 26;
-  static brickRadius = 10;
+  static tileRadius = 10;
 }

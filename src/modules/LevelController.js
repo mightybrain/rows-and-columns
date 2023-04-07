@@ -7,7 +7,7 @@ export default class LevelController {
 
   isMatch(currentFieldMap) {
     return currentFieldMap.every((row, y) => {
-      return row.every((cell, x) => cell.getBrick().getColor().id === this._map[y][x]);
+      return row.every((cell, x) => cell.getTile().getColor().id === this._map[y][x]);
     })
   }
 

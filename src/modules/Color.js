@@ -1,15 +1,11 @@
 export default class Color {
-  static grass = {
-    id: 1,
-    key: '#4DAF34',
-  };
   static blueDeep = {
     id: 2,
-    key: '#1D3753',
+    key: '#0F335A',
   };
   static blueNight = {
     id: 3,
-    key: '#203E60',
+    key: '#143D6C',
   };
   static blue = {
     id: 4,
@@ -43,8 +39,4 @@ export default class Color {
     id: 11,
     key: '#FFFFFF',
   };
-  static softGrass = {
-    id: 12,
-    key: '#5DBB46',
-  }
 }

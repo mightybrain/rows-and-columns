@@ -1,36 +1,23 @@
 import levels from '../assets/json/levels.json';
 
-import Random from './Random';
-
 export default class State {
-	constructor({ assets }) {
-		this._assets = assets;
+	constructor() {
+		this._level = 0;
+	}
 
-		this._level = 1;
-		this._gold = 0;
+	async loadPlayerStats() {
+		const { level } = await YSDK.getPlayerStats();
+		if (level) this.setLevel(level);
 	}
 
 	increaseLevel() {
 		const nextLevel = this._level + 1;
-		if (levels[nextLevel]) this._level = nextLevel;
-		else this._level = 1;
+		if (levels.levels[nextLevel]) this.setLevel(nextLevel);
+		else this.setLevel(0);
 	}
 
 	resetLevel() {
-		this._level = 1;
-	}
-
-	setRandomLevel() {
-		const levelsKeys = Object.keys(levels);
-
-		let level = null;
-
-		do {
-			const randomIndex = Random.getRandomFromRange(0, levelsKeys.length - 1);
-			level = parseInt(levelsKeys[randomIndex]);
-		} while (level === this._level)
-		
-		this._level = level;
+		this.setLevel(0);
 	}
 
 	setLevel(level) {

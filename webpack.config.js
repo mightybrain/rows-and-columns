@@ -2,7 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
 	entry: './src/index.js',
-	mode: 'development',
+	mode: 'production',
 	devtool: 'source-map',
 
 	output: {
@@ -16,6 +16,14 @@ module.exports = {
 				type: 'asset/resource',
 				generator: {
 					filename: 'images/[name]-[hash][ext]',
+				}
+			},
+
+			{
+				test: /\.wav$/,
+				type: 'asset/resource',
+				generator: {
+					filename: 'audio/[name][ext]',
 				}
 			},
 

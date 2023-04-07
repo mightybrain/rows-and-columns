@@ -1,53 +1,52 @@
-import Draw from './Draw';
 import Tile from './Tile';
 import Cell from './Cell';
 import Random from './Random';
-import Color from './Color';
+import TileScaleAnimation from './TileScaleAnimation';
+import YSDK from './YSDK';
 
 export default class Field {
-  constructor({ canvas, assets, state, sceneManager, levelController }) {
+  constructor({ canvas, ctx, assets, state, sceneManager, levelController }) {
     this._canvas = canvas;
+    this._ctx = ctx;
     this._assets = assets;
     this._state = state;
     this._sceneManager = sceneManager;
     this._levelController = levelController;
 
-    this._position = {
-      x: 0,
-      y: 0,
-    };
-    this._size = {
-      width: 0,
-      height: 0,
-    };
-    //this._rowHeight = 0;
-    //this._columnWidth = 0;
+    this._columnWidth = 0;
+    this._rowHeight = 0;
     this._maxOutOfBoundsX = 0;
     this._maxOutOfBoundsY = 0;
     this._setMetrics();
 
     this._map = [];
     this._setMap();
-    this._setBricks();
+    this._setTiles();
+
+    this._animations = [];
 
     this._startDraggingPosition = null;
     this._startDraggingCoords = null;
-    this._prevDraggingMovePosition = null;
+    this._prevDraggingPosition = null;
     this._draggingAxis = null;
-    this._detachedBricks = [];
+    this._detachedTiles = [];
     this._levelComplete = false;
 
     this._movesCounter = 0;
   }
 
-  render(ctx) {
-    Draw.roundedRect(ctx, this._position.x, this._position.y, this._size.width, this._size.height, Field.radius, Color.blueDeep.key);
+  update(time) {
+    this._animations.forEach(animation => animation.update(time));
 
+    this._animations = this._animations.filter(animation => !animation.isFinished());
+  }
+
+  render() {
     this._map.forEach(row => {
-      row.forEach(cell => cell.render(ctx));
+      row.forEach(cell => cell.render());
     });
 
-    this._detachedBricks.forEach(brick => brick.render(ctx));
+    this._detachedTiles.forEach(tile => tile.render());
   }
 
   handleStartDragging({ position }) {
@@ -56,20 +55,20 @@ export default class Field {
     this._startDraggingPosition = position;
     this._startDraggingCoords = this.getCoordsByPosition(position);
 
-    this._prevDraggingMovePosition = position;
+    this._prevDraggingPosition = position;
   }
 
-  handleMoveDragging({ position }) {
+  handleDragging({ position }) {
     if (!this._startDraggingPosition || !this._startDraggingCoords) return;
 
     if (!this._draggingAxis) this._setDraggingAxis(position);
 
-    if (!this._detachedBricks.length) this._detachBricks();
+    if (!this._detachedTiles.length) this._detachTiles();
 
     if (this._draggingAxis === 'x') this._moveRow(position);
     else this._moveColumn(position);
 
-    this._prevDraggingMovePosition = position;
+    this._prevDraggingPosition = position;
   }
 
   _setDraggingAxis(draggingPosition) {
@@ -80,133 +79,150 @@ export default class Field {
   }
 
   handleEndDragging(event) {
-    if (!this._detachedBricks.length) return;
+    if (!this._detachedTiles.length) return;
 
     const axis = this._draggingAxis;
-    this._detachedBricks.sort((a, b) => a.getPosition()[axis] - b.getPosition()[axis]);
+    this._detachedTiles.sort((a, b) => a.getPosition()[axis] - b.getPosition()[axis]);
 
-    let bricksWasUpdated = false;
+    let tilesWasUpdated = false;
 
     if (axis === 'x') {
       this._map[this._startDraggingCoords.y].forEach(cell => {
-        const brickWasUpdated = this._attachFirstDetachedBrickToCell(cell);
-        bricksWasUpdated = bricksWasUpdated || brickWasUpdated;
+        const tileWasUpdated = this._attachFirstDetachedTileToCell(cell);
+        tilesWasUpdated = tilesWasUpdated || tileWasUpdated;
       });
     } else {
       this._map.forEach(row => {
         const cell = row[this._startDraggingCoords.x];
-        const brickWasUpdated = this._attachFirstDetachedBrickToCell(cell);
-        bricksWasUpdated = bricksWasUpdated || brickWasUpdated;
+        const tileWasUpdated = this._attachFirstDetachedTileToCell(cell);
+        tilesWasUpdated = tilesWasUpdated || tileWasUpdated;
       });
     }
 
-    if (bricksWasUpdated) this._movesCounter += 1;
+    if (tilesWasUpdated) this._movesCounter += 1;
 
     this._startDraggingPosition = null;
     this._startDraggingCoords = null;
-    this._prevDraggingMovePosition = null;
+    this._prevDraggingPosition = null;
     this._draggingAxis = null;
 
     this._handleDraggingResult();
   }
 
-  _attachFirstDetachedBrickToCell(cell) {
+  _attachFirstDetachedTileToCell(cell) {
     const coords = cell.getCoords();
-    const brick = this._detachedBricks.shift();
+    const tile = this._detachedTiles.shift();
 
     const position = this.getPositionByCoords(coords);
-    brick.setPosition(position);
-    brick.setOpacity(1);
+    tile.setPosition(position);
+    tile.setOpacity(1);
 
-    return cell.setBrick(brick);
+    return cell.setTile(tile);
   }
 
-  _handleDraggingResult() {
+  async _handleDraggingResult() {
     this._levelComplete = this._levelController.isMatch(this._map);
     if (this._levelComplete) {
+      //await this._savePlayerStats();
+      this._startLevelCompliteAnimation();
       setTimeout(() => {
         this._sceneManager.showResultScene(this._movesCounter);
       }, 1500)
     }
   }
 
-  _detachBricks() {
-    this._detachedBricks = this._draggingAxis === 'x' ?
-      this._map[this._startDraggingCoords.y].map(cell => cell.detachBrick()) :
-      this._map.map(row => row[this._startDraggingCoords.x].detachBrick());
+  async _savePlayerStats() {
+    const level = this._state.getLevel() + 1;
+    await YSDK.savePlayerStats({ level });
+  }
+
+  _startLevelCompliteAnimation() {
+    this._map.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        const tile = cell.getTile();
+        const animation = new TileScaleAnimation({ tile });
+        this._animations.push(animation);
+      })
+    })
+  }
+
+  _detachTiles() {
+    this._detachedTiles = this._draggingAxis === 'x' ?
+      this._map[this._startDraggingCoords.y].map(cell => cell.detachTile()) :
+      this._map.map(row => row[this._startDraggingCoords.x].detachTile());
   }
 
   _moveRow(position) {
-    const offset = position.x - this._prevDraggingMovePosition.x;
+    const offset = position.x - this._prevDraggingPosition.x;
 
-    this._detachedBricks.forEach(brick => {
-      const currentPosition = brick.getPosition();
+    this._detachedTiles.forEach(tile => {
+      const currentPosition = tile.getPosition();
 
       const newPosition = {
         x: currentPosition.x + offset,
         y: currentPosition.y,
       }
 
-      if (offset < 0 && newPosition.x < this._position.x + Field.padding - this._maxOutOfBoundsX) {
-        newPosition.x += this._detachedBricks.length * (Tile.width + Field.gap);
-      } else if (offset > 0 && newPosition.x + Tile.width > this._position.x + this._size.width - Field.padding + this._maxOutOfBoundsX) {
-        newPosition.x -= this._detachedBricks.length * (Tile.width + Field.gap);
+      if (offset < 0 && newPosition.x < Field.positionX - this._maxOutOfBoundsX) {
+        newPosition.x += this._detachedTiles.length * (this._columnWidth + Field.gap);
+      } else if (offset > 0 && newPosition.x + this._columnWidth > Field.positionX + Field.width + this._maxOutOfBoundsX) {
+        newPosition.x -= this._detachedTiles.length * (this._columnWidth + Field.gap);
       }
 
       let opacity = 1;
 
-      if (newPosition.x < this._position.x + Field.padding) {
-        opacity = 1 - (this._position.x + Field.padding - newPosition.x) / this._maxOutOfBoundsX;
-      } else if (newPosition.x + Tile.width > this._position.x + this._size.width - Field.padding) {
-        opacity = 1 - (newPosition.x + Tile.width - (this._position.x + this._size.width - Field.padding)) / this._maxOutOfBoundsX;
+      if (newPosition.x < Field.positionX) {
+        opacity = 1 - (Field.positionX - newPosition.x) / this._maxOutOfBoundsX;
+      } else if (newPosition.x + this._columnWidth > Field.positionX + Field.width) {
+        opacity = 1 - (newPosition.x + this._columnWidth - (Field.positionX + Field.width)) / this._maxOutOfBoundsX;
       }
 
-      brick.setOpacity(opacity);
-      brick.setPosition(newPosition);
+      tile.setOpacity(opacity);
+      tile.setPosition(newPosition);
     })
   }
 
   _moveColumn(position) {
-    const offset = position.y - this._prevDraggingMovePosition.y;
+    const offset = position.y - this._prevDraggingPosition.y;
 
-    this._detachedBricks.forEach(brick => {
-      const currentPosition = brick.getPosition();
+    this._detachedTiles.forEach(tile => {
+      const currentPosition = tile.getPosition();
 
       const newPosition = {
         x: currentPosition.x,
         y: currentPosition.y + offset,
       }
 
-      if (offset < 0 && newPosition.y < this._position.y + Field.padding - this._maxOutOfBoundsY) {
-        newPosition.y += this._detachedBricks.length * (Tile.height + Field.gap);
-      } else if (offset > 0 && newPosition.y + Tile.height > this._position.y + this._size.height - Field.padding + this._maxOutOfBoundsY) {
-        newPosition.y -= this._detachedBricks.length * (Tile.height + Field.gap);
+      if (offset < 0 && newPosition.y < Field.positionY - this._maxOutOfBoundsY) {
+        newPosition.y += this._detachedTiles.length * (this._rowHeight + Field.gap);
+      } else if (offset > 0 && newPosition.y + this._rowHeight > Field.positionY + Field.height + this._maxOutOfBoundsY) {
+        newPosition.y -= this._detachedTiles.length * (this._rowHeight + Field.gap);
       }
 
       let opacity = 1;
 
-      if (newPosition.y < this._position.y + Field.padding) {
-        opacity = 1 - (this._position.y + Field.padding - newPosition.y) / this._maxOutOfBoundsY;
-      } else if (newPosition.y + Tile.height > this._position.y + this._size.height - Field.padding) {
-        opacity = 1 - (newPosition.y + Tile.height - (this._position.y + this._size.height - Field.padding)) / this._maxOutOfBoundsY;
+      if (newPosition.y < Field.positionY) {
+        opacity = 1 - (Field.positionY - newPosition.y) / this._maxOutOfBoundsY;
+      } else if (newPosition.y + this._rowHeight > Field.positionY + Field.height) {
+        opacity = 1 - (newPosition.y + this._rowHeight - (Field.positionY + Field.height)) / this._maxOutOfBoundsY;
       }
 
-      brick.setOpacity(opacity);
-      brick.setPosition(newPosition);
+      tile.setOpacity(opacity);
+      tile.setPosition(newPosition);
     })
   }
 
   getCoordsByPosition(position) {
     return {
-      x: Math.floor((position.x - this._position.x - Field.padding) / (Field.gap + Tile.width)),
-      y: Math.floor((position.y - this._position.y - Field.padding) / (Field.gap + Tile.height)),
+      x: Math.floor((position.x - Field.positionX) / (Field.gap + this._columnWidth)),
+      y: Math.floor((position.y - Field.positionY) / (Field.gap + this._rowHeight)),
     }
   }
 
   getPositionByCoords(coords) {
     return {
-      x: this._position.x + coords.x * (Field.gap + Tile.width) + Field.padding,
-      y: this._position.y + coords.y * (Field.gap + Tile.height) + Field.padding,
+      x: Field.positionX + coords.x * (Field.gap + this._columnWidth),
+      y: Field.positionY + coords.y * (Field.gap + this._rowHeight),
     }
   }
 
@@ -216,26 +232,23 @@ export default class Field {
 
   _isFieldIncludesPosition(position) {
     return (
-      position.x > this._position.x + Field.padding && position.x < this._position.x + this._size.width - Field.padding &&
-      position.y > this._position.y + Field.padding && position.y < this._position.y + this._size.height - Field.padding
+      position.x > Field.positionX && position.x < Field.positionX + Field.width &&
+      position.y > Field.positionY && position.y < Field.positionY + Field.height
     );
   }
 
   _setMetrics() {
-    const { x, y } = this._levelController.getMapLengths();
+    const { x: xLength, y: yLength } = this._levelController.getMapLengths();
 
-    this._size.width = x * Tile.width + (x - 1) * Field.gap + Field.padding * 2;
-    this._size.height = y * Tile.height + (y - 1) * Field.gap + Field.padding * 2;
+    this._columnWidth = (Field.width - Field.gap * (xLength - 1)) / xLength;
+    this._rowHeight = (Field.height - Field.gap * (yLength - 1)) / yLength;
 
-    this._position.x = this._canvas.width / 2 - this._size.width / 2;
-    this._position.y = this._canvas.height / 2 - this._size.height / 2;
-
-    this._maxOutOfBoundsX = (Field.gap + Tile.width) / 2;
-    this._maxOutOfBoundsY = (Field.gap + Tile.height) / 2;
+    this._maxOutOfBoundsX = (Field.gap + this._columnWidth) / 2;
+    this._maxOutOfBoundsY = (Field.gap + this._rowHeight) / 2;
   }
 
   _setMap() {
-    const { x: xLength, y: yLength} = this._levelController.getMapLengths();
+    const { x: xLength, y: yLength } = this._levelController.getMapLengths();
 
     for (let y = 0; y < yLength; y++) {
 
@@ -249,7 +262,7 @@ export default class Field {
     }
   }
 
-  _setBricks() {
+  _setTiles() {
     let colorsCounters = this._levelController.getColorsCounters();
 
     this._map.forEach(row => {
@@ -261,18 +274,26 @@ export default class Field {
         const colorCounter = colorsCounters[randomIndex];
         colorCounter.counter -= 1;
 
-        const brick = this._createBrick(coords, colorCounter.color);
-        cell.setBrick(brick);
+        const tile = this._createTile(coords, colorCounter.color);
+        cell.setTile(tile);
       })
     })
+
+    if (this._levelController.isMatch(this._map)) this._setTiles();
   }
 
-  _createBrick(coords, color) {
+  _createTile(coords, color) {
     const position = this.getPositionByCoords(coords);
-    return new Tile({ color, position });
+    const size = {
+      width: this._columnWidth,
+      height: this._rowHeight,
+    }
+    return new Tile({ ctx: this._ctx, color, size, position });
   }
-
-  static padding = 19;
+  
+  static width = 662;
+  static height = 662;
+  static positionX = 19;
+  static positionY = 294;
   static gap = 10;
-  static radius = 44;
 }
