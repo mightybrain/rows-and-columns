@@ -34,8 +34,8 @@ export default class LevelPreview {
 
   static width = 194;
   static height = 194;
-  static positionX = 253;
-  static positionY = 40;
+  static positionX = 487;
+  static positionY = 19;
   static gap = 2;
   static tileRadius = 10;
 }

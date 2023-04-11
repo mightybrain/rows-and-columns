@@ -1,14 +1,14 @@
 export default class Draw {
-  static rect(ctx, x, y, width, height, color, opacity = 1) {
+  static rect(ctx, x, y, width, height, colorKey, opacity = 1) {
     ctx.globalAlpha = opacity;
-		ctx.fillStyle = color;
+		ctx.fillStyle = colorKey;
 		ctx.fillRect(x, y, width, height);
     ctx.globalAlpha = 1;
   }
 
-  static roundedRect(ctx, x, y, width, height, radius, color, opacity = 1) {
+  static roundedRect(ctx, x, y, width, height, radius, colorKey, opacity = 1) {
     ctx.globalAlpha = opacity;
-    ctx.fillStyle = color;
+    ctx.fillStyle = colorKey;
     ctx.beginPath();
     ctx.moveTo(x, y + radius);
     ctx.arcTo(x, y + height, x + radius, y + height, radius);
@@ -19,15 +19,29 @@ export default class Draw {
     ctx.globalAlpha = 1;
   }
   
-  static stroke(ctx, thickness, color) {
-    ctx.strokeStyle = color;
+  static stroke(ctx, thickness, colorKey) {
+    ctx.strokeStyle = colorKey;
     ctx.lineWidth = thickness;
     ctx.stroke();
   }
   
-  static text(ctx, x, y, text, size, color) {
-    ctx.fillStyle = color;
+  static text(ctx, x, y, text, size, colorKey, opacity = 1) {
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = colorKey;
     ctx.font = `${size}px Nunito`;
     ctx.fillText(text, x, y);
+    ctx.globalAlpha = 1;
+  }
+
+  static image(ctx, dx, dy, dWidth, dHeight, image, opacity = 1) {
+    ctx.globalAlpha = opacity;
+    ctx.drawImage(image, dx, dy, dWidth, dHeight);
+    ctx.globalAlpha = 1;
+  }
+
+  static slicedImage(ctx, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight, image, opacity = 1) {
+    ctx.globalAlpha = opacity;
+    ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+    ctx.globalAlpha = 1;
   }
 }

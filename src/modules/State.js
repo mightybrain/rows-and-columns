@@ -1,30 +1,28 @@
-import levels from '../assets/json/levels.json';
+import YSDK from './YSDK';
 
 export default class State {
 	constructor() {
-		this._level = 0;
+		this._levelsResult = {};
 	}
 
 	async loadPlayerStats() {
-		const { level } = await YSDK.getPlayerStats();
-		if (level) this.setLevel(level);
+		const levelsResult = await YSDK.getPlayerStats();
+		if (levelsResult) this._levelsResult = levelsResult;
 	}
 
-	increaseLevel() {
-		const nextLevel = this._level + 1;
-		if (levels.levels[nextLevel]) this.setLevel(nextLevel);
-		else this.setLevel(0);
+	getRating() {
+		return Object.values(this._levelsResult).reduce((total, item) => total + item, 0);
 	}
 
-	resetLevel() {
-		this.setLevel(0);
+	async setLevelResult(levelId, result) {
+		const prevResult = this._levelsResult[levelId];
+		if (!prevResult || prevResult < result) {
+			this._levelsResult[levelId] = result;
+			//await YSDK.savePlayerStats(this._levelsResult);
+		}
 	}
 
-	setLevel(level) {
-		this._level = level;
-	}
-
-	getLevel() {
-		return this._level;
+	getLevelResult(levelId) {
+		return this._levelsResult[levelId];
 	}
 }

@@ -2,8 +2,6 @@ import Assets from './Assets';
 import State from './State';
 import SceneManager from './SceneManager';
 
-import YSDK from './YSDK';
-
 export default class Game {
 	constructor(canvas) {
 		this._canvas = canvas;
@@ -28,6 +26,7 @@ export default class Game {
 	}
 
 	async _startGame() {
+		await document.fonts.load('1px Nunito')
 		await this._assets.load();
 		//await this._state.loadPlayerStats();
 

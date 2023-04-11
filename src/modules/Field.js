@@ -2,15 +2,17 @@ import Tile from './Tile';
 import Cell from './Cell';
 import Random from './Random';
 import TileScaleAnimation from './TileScaleAnimation';
-import YSDK from './YSDK';
 
 export default class Field {
-  constructor({ canvas, ctx, assets, state, sceneManager, levelController }) {
+  constructor({ canvas, ctx, assets, state, sceneManager, levelsKey, levelIndex, levelId, levelController }) {
     this._canvas = canvas;
     this._ctx = ctx;
     this._assets = assets;
     this._state = state;
     this._sceneManager = sceneManager;
+    this._levelsKey = levelsKey;
+    this._levelIndex = levelIndex;
+    this._levelId = levelId;
     this._levelController = levelController;
 
     this._columnWidth = 0;
@@ -122,23 +124,21 @@ export default class Field {
 
   async _handleDraggingResult() {
     this._levelComplete = this._levelController.isMatch(this._map);
-    if (this._levelComplete) {
-      //await this._savePlayerStats();
-      this._startLevelCompliteAnimation();
-      setTimeout(() => {
-        this._sceneManager.showResultScene(this._movesCounter);
-      }, 1500)
-    }
-  }
+    if (!this._levelComplete) return;
 
-  async _savePlayerStats() {
-    const level = this._state.getLevel() + 1;
-    await YSDK.savePlayerStats({ level });
+    this._startLevelCompliteAnimation();
+
+    const levelResult = this._levelController.getLevelResult(this._movesCounter);
+    await this._state.setLevelResult(this._levelId, levelResult);
+
+    setTimeout(() => {
+      this._sceneManager.showResultScene(this._movesCounter, levelResult, this._levelsKey, this._levelIndex);
+    }, 1500)
   }
 
   _startLevelCompliteAnimation() {
-    this._map.forEach((row, y) => {
-      row.forEach((cell, x) => {
+    this._map.forEach(row => {
+      row.forEach(cell => {
         const tile = cell.getTile();
         const animation = new TileScaleAnimation({ tile });
         this._animations.push(animation);
@@ -294,6 +294,6 @@ export default class Field {
   static width = 662;
   static height = 662;
   static positionX = 19;
-  static positionY = 294;
+  static positionY = 292;
   static gap = 10;
 }

@@ -1,8 +1,9 @@
 import Tile from './Tile';
 
 export default class LevelController {
-  constructor({ map }) {
+  constructor({ map, targetMoves }) {
     this._map = map;
+    this._targetMoves = targetMoves;
   }
 
   isMatch(currentFieldMap) {
@@ -18,6 +19,11 @@ export default class LevelController {
     }
   }
 
+  getLevelResult(moves) {
+    const result = moves <= this._targetMoves ? LevelController.maxResult : moves <= this._targetMoves * 2 ? LevelController.maxResult - 1 : LevelController.minResult;
+    return Math.min(result, LevelController.maxResult);
+  }
+
   getColorsCounters() {
     const colorsId = this._map.flat();
     const uniqueColorsId = Array.from(new Set(colorsId));
@@ -28,4 +34,7 @@ export default class LevelController {
       }
     })
   }
+
+  static maxResult = 3;
+  static minResult = 1;
 }

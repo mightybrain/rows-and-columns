@@ -11,7 +11,6 @@ export default class Assets {
 			Assets.data.forEach(source => {
 				const type = source.fileName.split('.').pop();
 				if (Assets.imagesTypes.includes(type)) this._loadImage(source, resolve);
-				if (Assets.soundsTypes.includes(type)) this._loadSound(source, resolve);
 			})
 		})
 	}
@@ -37,5 +36,18 @@ export default class Assets {
 	}
 
 	static imagesTypes = ['png'];
-	static data = [];
+	static data = [
+		{
+			fileName: 'star-yellow.png',
+			file: require('../assets/images/star-yellow.png'),
+		},
+		{
+			fileName: 'star-blue.png',
+			file: require('../assets/images/star-blue.png'),
+		},
+		{
+			fileName: 'star-green.png',
+			file: require('../assets/images/star-green.png'),
+		},
+	];
 }

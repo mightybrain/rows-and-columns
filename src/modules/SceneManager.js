@@ -2,6 +2,7 @@ import Draw from './Draw';
 import Color from './Color';
 import OpenScene from './OpenScene';
 import AboutScene from './AboutScene';
+import LevelsScene from './LevelsScene';
 import CoreScene from './CoreScene';
 import ResultScene from './ResultScene';
 
@@ -96,12 +97,16 @@ export default class SceneManager {
 		this._futureScene = new AboutScene(this._getScenesCommonProps());
 	}
 
-	showCoreScene() {
-		this._futureScene = new CoreScene(this._getScenesCommonProps());
+	showLevelsScene(levelsKey) {
+		this._futureScene = new LevelsScene({ ...this._getScenesCommonProps(), levelsKey });
 	}
 
-	showResultScene(movesCounter) {
-		this._futureScene = new ResultScene({ ...this._getScenesCommonProps(), movesCounter });
+	showCoreScene(levelsKey, levelIndex) {
+		this._futureScene = new CoreScene({ ...this._getScenesCommonProps(), levelsKey, levelIndex });
+	}
+
+	showResultScene(movesCounter, levelResult, levelsKey, levelIndex) {
+		this._futureScene = new ResultScene({ ...this._getScenesCommonProps(), movesCounter, levelResult, levelsKey, levelIndex });
 	}
 
 	static transitionDuration = 300;
