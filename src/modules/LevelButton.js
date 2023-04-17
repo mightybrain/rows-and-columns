@@ -7,13 +7,14 @@ export default class LevelButton {
     this._ctx = ctx;
     this._assets = assets;
     this._position = position;
-
     this._levelIndex = levelIndex;
-    this._levelIndexPosition = {
+
+    this._levelLabel = this._levelIndex + 1;
+    this._levelLabelPosition = {
       x: 0,
       y: 0,
     };
-    this._setLevelIndexPosition();
+    this._setLevelLabelPosition();
 
     this._prevResult = prevResult;
     this._prevResultMarkup = [];
@@ -24,7 +25,8 @@ export default class LevelButton {
 
   render() {
     Draw.roundedRect(this._ctx, this._position.x, this._position.y, LevelButton.width, LevelButton.height, LevelButton.radius, this._color.key);
-    Draw.text(this._ctx, this._levelIndexPosition.x, this._levelIndexPosition.y, this._levelIndex, LevelButton.fontSize, Color.white.key);
+    
+    Draw.text(this._ctx, this._levelLabelPosition.x, this._levelLabelPosition.y, this._levelLabel, LevelButton.fontSize, Color.white.key);
 
     this._prevResultMarkup.forEach(({ icon, position }) => {
       Draw.image(this._ctx, position.x, position.y, LevelButton.iconWidth, LevelButton.iconHeight, icon);
@@ -56,9 +58,9 @@ export default class LevelButton {
     this._prevResultMarkup = prevResultMarkup;
   }
 
-  _setLevelIndexPosition() {
-    this._levelIndexPosition.x = this._position.x + LevelButton.padding;
-    this._levelIndexPosition.y = this._position.y + LevelButton.lineHeight + LevelButton.lineHeight / 3;
+  _setLevelLabelPosition() {
+    this._levelLabelPosition.x = this._position.x + LevelButton.padding;
+    this._levelLabelPosition.y = this._position.y + LevelButton.padding + LevelButton.fontSize - LevelButton.lineHeight / 4;
   }
 
   getLevelIndex() {
@@ -69,8 +71,10 @@ export default class LevelButton {
   static height = 158;
   static radius = 46;
   static padding = 24;
+
   static fontSize = 48;
   static lineHeight = 52;
+
   static iconWidth = 30;
   static iconHeight = 29;
   static iconGap = 10;

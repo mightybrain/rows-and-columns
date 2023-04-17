@@ -18,7 +18,7 @@ export default class State {
 		const prevResult = this._levelsResult[levelId];
 		if (!prevResult || prevResult < result) {
 			this._levelsResult[levelId] = result;
-			//await YSDK.savePlayerStats(this._levelsResult);
+			await YSDK.savePlayerStats(this._levelsResult);
 		}
 	}
 

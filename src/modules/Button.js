@@ -7,6 +7,7 @@ export default class Button {
     this._ctx = ctx;
     this._position = position;
     this._size = size;
+    
     this._label = label;
     this._labelPosition = {
       x: 0,
@@ -17,6 +18,7 @@ export default class Button {
 
   render() {
     Draw.roundedRect(this._ctx, this._position.x, this._position.y, this._size.width, this._size.height, Button.radius, Color.blueNight.key);
+    
     Draw.text(this._ctx, this._labelPosition.x, this._labelPosition.y, this._label, Button.fontSize, Color.white.key);
   }
 
@@ -35,7 +37,6 @@ export default class Button {
   }
 
   static height = 74;
-  static paddingHorizontal = 40;
   static fontSize = 32;
   static radius = 37;
 }

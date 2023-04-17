@@ -4,8 +4,7 @@ import Random from './Random';
 import TileScaleAnimation from './TileScaleAnimation';
 
 export default class Field {
-  constructor({ canvas, ctx, assets, state, sceneManager, levelsKey, levelIndex, levelId, levelController }) {
-    this._canvas = canvas;
+  constructor({ ctx, assets, state, sceneManager, levelsKey, levelIndex, levelId, levelController }) {
     this._ctx = ctx;
     this._assets = assets;
     this._state = state;
@@ -263,23 +262,17 @@ export default class Field {
   }
 
   _setTiles() {
-    let colorsCounters = this._levelController.getColorsCounters();
+    let colors = this._levelController.getLevelColors();
 
     this._map.forEach(row => {
       row.forEach(cell => {
         const coords = cell.getCoords();
+        const color = colors.shift();
 
-        colorsCounters = colorsCounters.filter(colorCounter => colorCounter.counter);
-        const randomIndex = Random.getRandomFromRange(0, colorsCounters.length - 1);
-        const colorCounter = colorsCounters[randomIndex];
-        colorCounter.counter -= 1;
-
-        const tile = this._createTile(coords, colorCounter.color);
+        const tile = this._createTile(coords, color);
         cell.setTile(tile);
       })
     })
-
-    if (this._levelController.isMatch(this._map)) this._setTiles();
   }
 
   _createTile(coords, color) {

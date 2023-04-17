@@ -3,6 +3,7 @@ import Text from './Text';
 import Button from './Button';
 import Color from './Color';
 import LevelController from './LevelController';
+import RatingPreview from './RatingPreview';
 
 import levels from '../assets/json/levels.json';
 
@@ -17,6 +18,12 @@ export default class ResultScene {
     this._levelResult = levelResult;
     this._levelsKey = levelsKey;
     this._levelIndex = levelIndex;
+
+    this._ratingPreview = new RatingPreview({
+      ctx: this._ctx,
+      state: this._state,
+      assets: this._assets,
+    });
 
     this._titleMarkup = [];
     this._setTitleMarkup();
@@ -37,7 +44,9 @@ export default class ResultScene {
     this._setLevelResultMarkup();
 
     this._continueButton = null;
-    this._initButton();
+    this._repeatButton = null;
+    this._initButtons();
+
   }
 
   update(time) {
@@ -46,6 +55,8 @@ export default class ResultScene {
 
   render() {
     Draw.rect(this._ctx, 0, 0, this._canvas.width, this._canvas.height, Color.blueDeep.key);
+
+    this._ratingPreview.render();
 
     this._titleMarkup.forEach(({ string, position }) => {
       Draw.text(this._ctx, position.x, position.y, string, ResultScene.titleFontSize, Color.white.key);
@@ -60,6 +71,7 @@ export default class ResultScene {
     })
 
     this._continueButton.render();
+    this._repeatButton.render();
   }
 
   handleClick({ position }) {
@@ -67,6 +79,8 @@ export default class ResultScene {
       const nextLevelIndex = this._levelIndex + 1;
       if (levels[this._levelsKey][nextLevelIndex]) this._sceneManager.showCoreScene(this._levelsKey, nextLevelIndex);
       else this._sceneManager.showLevelsScene(this._levelsKey);
+    } else if (this._repeatButton.isPressed(position)) {
+      this._sceneManager.showCoreScene(this._levelsKey, this._levelIndex);
     }
   }
 
@@ -126,11 +140,11 @@ export default class ResultScene {
     this._levelResultMarkup = levelResultMarkup;
   }
 
-  _initButton() {
+  _initButtons() {
     this._continueButton = new Button({
       ctx: this._ctx,
       position: {
-        x: this._canvas.width / 2 - ResultScene.continueButtonWidth / 2,
+        x: ResultScene.continueButtonPositionX,
         y: ResultScene.continueButtonPositionY,
       },
       size: {
@@ -139,23 +153,36 @@ export default class ResultScene {
       },
       label: ResultScene.continueButtonLabel,
     })
+    
+    this._repeatButton = new Button({
+      ctx: this._ctx,
+      position: {
+        x: ResultScene.repeatButtonPositionX,
+        y: ResultScene.repeatButtonPositionY,
+      },
+      size: {
+        width: ResultScene.repeatButtonWidth,
+        height: ResultScene.buttonsHeight,
+      },
+      label: ResultScene.repeatButtonLabel,
+    })
   }
 
   static title = 'Уровень<br>пройден!';
   static titleFontSize = 72;
   static titleLineHeight = 76;
-  static titlePositionY = 303;
+  static titlePositionY = 251;
 
   static movesCounterHintLabel = 'Ходов:';
   static movesCounterHintFontSize = 48;
   static movesCounterHintPositionX = 267;
-  static movesCounterHintPositionY = 535;
+  static movesCounterHintPositionY = 483;
 
   static movesCounterFontSize = 96;
-  static movesCounterPositionY = 593;
+  static movesCounterPositionY = 541;
 
   static ratingPositionX = 221;
-  static ratingPositionY = 719;
+  static ratingPositionY = 667;
 
   static iconWidth = 73;
   static iconHeight = 70;
@@ -163,7 +190,13 @@ export default class ResultScene {
 
   static continueButtonLabel = 'Продолжить';
   static continueButtonPositionX = 206;
-  static continueButtonPositionY = 869;
+  static continueButtonPositionY = 817;
   static continueButtonWidth = 289;
+
+  static repeatButtonLabel = 'Повторить уровень';
+  static repeatButtonPositionX = 151;
+  static repeatButtonPositionY = 921;
+  static repeatButtonWidth = 399;
+
   static buttonsHeight = 74;
 }

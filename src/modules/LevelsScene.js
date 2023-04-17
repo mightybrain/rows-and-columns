@@ -88,11 +88,9 @@ export default class LevelsScene {
   _setLevelsButtons() {
     const levelsGroup = levels[this._levelsKey];
 
-    for (let key in levelsGroup) {
-      key = +key;
-      const index = key - 1;
-      const col = index % 3;
-      const row = Math.floor(index / 3);
+    for (let i = 0; i < levelsGroup.length; i++) {
+      const col = i % 3;
+      const row = Math.floor(i / 3);
 
       const levelButton = new LevelButton({
         ctx: this._ctx,
@@ -101,8 +99,8 @@ export default class LevelsScene {
           x: LevelsScene.gridPositionX + col * (LevelButton.width + LevelsScene.gridGap),
           y: LevelsScene.gridPositionY + row * (LevelButton.height + LevelsScene.gridGap),
         },
-        levelIndex: key,
-        prevResult: this._state.getLevelResult(levelsGroup[key].id) || 0,
+        levelIndex: i,
+        prevResult: this._state.getLevelResult(levelsGroup[i].id) || 0,
       })
 
       this._levelsButtons.push(levelButton);

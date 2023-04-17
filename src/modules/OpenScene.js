@@ -1,7 +1,7 @@
 import Draw from './Draw';
 import Text from './Text';
-import Button from './Button';
 import Color from './Color';
+import Button from './Button';
 import RatingPreview from './RatingPreview';
 import LockedButton from './LockedButton';
 
@@ -26,7 +26,7 @@ export default class OpenScene {
     this._mediumButton = null;
     this._hardButton = null;
     this._aboutButton = null;
-    this._initButton();
+    this._initButtons();
   }
 
   update(time) {
@@ -84,7 +84,7 @@ export default class OpenScene {
     })
   }
 
-  _initButton() {
+  _initButtons() {
     this._beginnerButton = new Button({
       ctx: this._ctx,
       position: {
@@ -99,32 +99,35 @@ export default class OpenScene {
     })
 
     const rating = this._state.getRating();
-    const mediumButton = rating >= OpenScene.mediumUnlockRating ? Button : LockedButton;
+    
+    const mediumUnlocked = rating >= OpenScene.mediumUnlockRating;
+    const mediumButton = mediumUnlocked ? Button : LockedButton;
     this._mediumButton = new mediumButton({
       ctx: this._ctx,
       assets: this._assets,
       position: {
-        x: rating >= OpenScene.mediumUnlockRating ? OpenScene.mediumButtonPositionX : OpenScene.mediumLockedButtonPositionX,
+        x: mediumUnlocked ? OpenScene.mediumButtonPositionX : OpenScene.mediumLockedButtonPositionX,
         y: OpenScene.mediumButtonPositionY,
       },
       size: {
-        width: rating >= OpenScene.mediumUnlockRating ? OpenScene.mediumButtonWidth : OpenScene.mediumLockedButtonWidth,
+        width: mediumUnlocked ? OpenScene.mediumButtonWidth : OpenScene.mediumLockedButtonWidth,
         height: mediumButton.height,
       },
       unlockRating: OpenScene.mediumUnlockRating,
       label: OpenScene.mediumButtonLabel,
     })
 
-    const hardButton = rating >= OpenScene.hardUnlockRating ? Button : LockedButton;
+    const hardUnlocked = rating >= OpenScene.hardUnlockRating;
+    const hardButton = hardUnlocked ? Button : LockedButton;
     this._hardButton = new hardButton({
       ctx: this._ctx,
       assets: this._assets,
       position: {
-        x: rating >= OpenScene.hardUnlockRating ? OpenScene.hardButtonPositionX : OpenScene.hardLockedButtonPositionX,
+        x: hardUnlocked ? OpenScene.hardButtonPositionX : OpenScene.hardLockedButtonPositionX,
         y: OpenScene.hardButtonPositionY,
       },
       size: {
-        width: rating >= OpenScene.hardUnlockRating ? OpenScene.hardButtonWidth : OpenScene.hardLockedButtonWidth,
+        width: hardUnlocked ? OpenScene.hardButtonWidth : OpenScene.hardLockedButtonWidth,
         height: hardButton.height,
       },
       unlockRating: OpenScene.hardUnlockRating,
@@ -145,22 +148,22 @@ export default class OpenScene {
     })
   }
 
-  static title = 'Colored<br>Tiles';
+  static title = 'Rows<br>and<br>Columns';
   static titleFontSize = 96;
   static titleLineHeight = 100;
-  static titlePositionY = 290;
+  static titlePositionY = 240;
 
   static beginnerButtonLabel = 'Начинающий';
   static beginnerButtonWidth = 300;
   static beginnerButtonPositionX = 200;
-  static beginnerButtonPositionY = 570;
+  static beginnerButtonPositionY = 620;
 
   static mediumUnlockRating = 24;
   static mediumButtonLabel = 'Средний';
   static mediumButtonWidth = 222;
   static mediumLockedButtonWidth = 321;
   static mediumButtonPositionX = 239;
-  static mediumButtonPositionY = 674;
+  static mediumButtonPositionY = 724;
   static mediumLockedButtonPositionX = 190;
 
   static hardUnlockRating = 52;
@@ -168,11 +171,11 @@ export default class OpenScene {
   static hardButtonWidth = 237;
   static hardLockedButtonWidth = 336;
   static hardButtonPositionX = 232;
-  static hardButtonPositionY = 778;
+  static hardButtonPositionY = 828;
   static hardLockedButtonPositionX = 182;
 
   static aboutButtonLabel = 'Об игре';
   static aboutButtonWidth = 210;
   static aboutButtonPositionX = 245;
-  static aboutButtonPositionY = 882;
+  static aboutButtonPositionY = 932;
 }

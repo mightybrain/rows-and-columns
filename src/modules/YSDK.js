@@ -21,7 +21,6 @@ export default class YSDK {
       .then(player => {
         YSDK.player = player;
         console.log('Player initialized');
-        console.log(YSDK.player);
       })
       .catch(err => {
         console.log('Ошибка при инициализации объекта Player');
@@ -44,7 +43,6 @@ export default class YSDK {
       .getStats()
       .then(data => {
         console.log('Получены сохраненные данные игрока');
-        console.log(data);
         return data;
       })
       .catch(err => {

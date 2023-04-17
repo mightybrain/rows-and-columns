@@ -95,7 +95,6 @@ export default class AboutScene {
 
   static title = 'Об игре';
   static titleFontSize = 72;
-  static titleLineHeight = 76;
   static titlePositionY = 294;
 
   static description = ['Цель игры – собирать<br>композиции из цветных плиток.<br>Перемещайте ряды влево и<br>вправо, а колонки вниз и вверх.<br>Если какая-то плитка при<br>смещении выйдет за границу<br>игрового поля, она появится<br>с противоположного края.<br>Приятной игры.', 'Связь с автором:<br>mb.games@yandex.ru'];
@@ -104,7 +103,7 @@ export default class AboutScene {
   static descriptionPositionY = 450;
 
   static backButtonLabel = 'Назад';
-  static backButtonPositionY = 19;
   static backButtonPositionX = 19;
+  static backButtonPositionY = 19;
   static backButtonWidth = 181;
 }

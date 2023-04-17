@@ -15,7 +15,7 @@ export default class CoreScene {
 		this._state = state;
 		this._sceneManager = sceneManager;
 
-    this._menuButton = null;
+    this._backButton = null;
     this._initButton();
 
 		this._levelsKey = levelsKey;
@@ -24,16 +24,16 @@ export default class CoreScene {
 
     this._levelPreview = new LevelPreview({
 			ctx: this._ctx,
-      map: this._level.map,
+      map: this._level.targetMap,
     });
 
     this._levelController = new LevelController({
-      map: this._level.map,
+      targetMap: this._level.targetMap,
+			initialMap: this._level.initialMap,
 			targetMoves: this._level.moves,
     })
 
 		this._field = new Field({
-			canvas: this._canvas,
 			ctx: this._ctx,
 			assets: this._assets,
 			state: this._state,
@@ -52,13 +52,13 @@ export default class CoreScene {
 	render() {
     Draw.rect(this._ctx, 0, 0, this._canvas.width, this._canvas.height, Color.blueDeep.key);
 
-		this._menuButton.render();
+		this._backButton.render();
     this._levelPreview.render();
 		this._field.render();
 	}
 
 	handleClick({ position }) {
-		if (this._menuButton.isPressed(position)) this._sceneManager.showOpenScene();
+		if (this._backButton.isPressed(position)) this._sceneManager.showLevelsScene(this._levelsKey);
 	}
 
 	handleStartDragging(event) {
@@ -74,22 +74,22 @@ export default class CoreScene {
 	}
 
   _initButton() {
-    this._menuButton = new Button({
+    this._backButton = new Button({
       ctx: this._ctx,
       position: {
-        x: CoreScene.menuButtonPositionX,
-        y: CoreScene.menuButtonPositionY,
+        x: CoreScene.backButtonPositionX,
+        y: CoreScene.backButtonPositionY,
       },
       size: {
-        width: CoreScene.menuButtonWidth,
+        width: CoreScene.backButtonWidth,
         height: Button.height,
       },
-      label: CoreScene.menuButtonLabel,
+      label: CoreScene.backButtonLabel,
     })
   }
 
-	static menuButtonLabel = 'В меню';
-	static menuButtonWidth = 202;
-	static menuButtonPositionX = 19;
-	static menuButtonPositionY = 19;
+	static backButtonLabel = 'Назад';
+	static backButtonWidth = 181;
+	static backButtonPositionX = 19;
+	static backButtonPositionY = 19;
 }

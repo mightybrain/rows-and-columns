@@ -28,7 +28,7 @@ export default class Game {
 	async _startGame() {
 		await document.fonts.load('1px Nunito')
 		await this._assets.load();
-		//await this._state.loadPlayerStats();
+		await this._state.loadPlayerStats();
 
 		this._sceneManager.showOpenScene();
 

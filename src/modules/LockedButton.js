@@ -33,8 +33,11 @@ export default class LockedButton {
 
   render() {
     Draw.roundedRect(this._ctx, this._position.x, this._position.y, this._size.width, this._size.height, LockedButton.radius, Color.blueNight.key, LockedButton.opacity);
+
     Draw.text(this._ctx, this._labelPosition.x, this._labelPosition.y, this._label, LockedButton.fontSize, Color.white.key, LockedButton.opacity);
+
     Draw.image(this._ctx, this._iconPosition.x, this._iconPosition.y, LockedButton.iconWidth, LockedButton.iconHeight, this._icon, LockedButton.opacity);
+    
     Draw.text(this._ctx, this._unlockRatingLabelPosition.x, this._unlockRatingLabelPosition.y, this._unlockRatingLabel, LockedButton.fontSize, Color.white.key, LockedButton.opacity);
   }
 

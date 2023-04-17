@@ -20,6 +20,7 @@ export default class RatingPreview {
 
   render() {
     Draw.image(this._ctx, RatingPreview.iconPositionX, RatingPreview.iconPositionY, RatingPreview.iconWidth, RatingPreview.iconHeight, this._icon);
+
     Draw.text(this._ctx, this._ratingPosition.x, this._ratingPosition.y, this._rating, RatingPreview.ratingFontSize, Color.white.key);
   }
 
@@ -30,10 +31,10 @@ export default class RatingPreview {
     this._ratingPosition.y = RatingPreview.ratingPositionY + RatingPreview.ratingFontSize;
   }
 
-  static iconWidth = 30;
-  static iconHeight = 29;
   static iconPositionX = 651;
   static iconPositionY = 23;
+  static iconWidth = 30;
+  static iconHeight = 29;
 
   static ratingPositionY = 19;
   static ratingMarginRight = 15;

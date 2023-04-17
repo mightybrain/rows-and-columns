@@ -1,38 +1,33 @@
 import Tile from './Tile';
 
 export default class LevelController {
-  constructor({ map, targetMoves }) {
-    this._map = map;
+  constructor({ targetMap, initialMap, targetMoves }) {
+    this._targetMap = targetMap;
+    this._initialMap = initialMap;
     this._targetMoves = targetMoves;
   }
 
   isMatch(currentFieldMap) {
     return currentFieldMap.every((row, y) => {
-      return row.every((cell, x) => cell.getTile().getColor().id === this._map[y][x]);
+      return row.every((cell, x) => cell.getTile().getColor().id === this._targetMap[y][x]);
     })
   }
 
   getMapLengths() {
     return {
-      x: this._map[0].length,
-      y: this._map.length,
+      x: this._targetMap[0].length,
+      y: this._targetMap.length,
     }
   }
 
   getLevelResult(moves) {
-    const result = moves <= this._targetMoves ? LevelController.maxResult : moves <= this._targetMoves * 2 ? LevelController.maxResult - 1 : LevelController.minResult;
-    return Math.min(result, LevelController.maxResult);
+    return moves <= this._targetMoves ? LevelController.maxResult : moves <= this._targetMoves * 2 ? LevelController.maxResult - 1 : LevelController.minResult;
   }
 
-  getColorsCounters() {
-    const colorsId = this._map.flat();
-    const uniqueColorsId = Array.from(new Set(colorsId));
-    return uniqueColorsId.map(id => {
-      return {
-        color: Tile.colors.find(color => color.id === id),
-        counter: colorsId.filter(colorId => colorId === id).length,
-      }
-    })
+  getLevelColors() {
+    return this._initialMap
+      .flat()
+      .map(id => Tile.colors.find(color => color.id === id));
   }
 
   static maxResult = 3;
