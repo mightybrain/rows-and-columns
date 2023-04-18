@@ -1,14 +1,11 @@
 import LevelPreview from './LevelPreview';
-import LevelController from './LevelController';
 import Field from './Field';
 import Draw from './Draw';
 import Color from './Color';
 import Button from './Button';
 
-import levels from '../assets/json/levels.json';
-
 export default class CoreScene {
-	constructor({ canvas, ctx, assets, state, sceneManager, levelsKey, levelIndex }) {
+	constructor({ canvas, ctx, assets, state, sceneManager, level }) {
 		this._canvas = canvas;
 		this._ctx = ctx;
 		this._assets = assets;
@@ -18,30 +15,19 @@ export default class CoreScene {
     this._backButton = null;
     this._initButton();
 
-		this._levelsKey = levelsKey;
-		this._levelIndex = levelIndex;
-    this._level = levels[this._levelsKey][this._levelIndex];
+    this._level = level;
 
     this._levelPreview = new LevelPreview({
 			ctx: this._ctx,
-      map: this._level.targetMap,
+      map: this._level.getTargetMap(),
     });
-
-    this._levelController = new LevelController({
-      targetMap: this._level.targetMap,
-			initialMap: this._level.initialMap,
-			targetMoves: this._level.moves,
-    })
 
 		this._field = new Field({
 			ctx: this._ctx,
 			assets: this._assets,
 			state: this._state,
 			sceneManager: this._sceneManager,
-			levelsKey: this._levelsKey,
-			levelIndex: this._levelIndex,
-			levelId: this._level.id,
-      levelController: this._levelController,
+			level: this._level,
 		});
 	}
 
@@ -58,7 +44,7 @@ export default class CoreScene {
 	}
 
 	handleClick({ position }) {
-		if (this._backButton.isPressed(position)) this._sceneManager.showLevelsScene(this._levelsKey);
+		if (this._backButton.isPressed(position)) this._sceneManager.showLevelsScene(this._level.getKey());
 	}
 
 	handleStartDragging(event) {

@@ -3,16 +3,16 @@ import Text from './Text';
 import Button from './Button';
 import Color from './Color';
 import LevelButton from './LevelButton';
-
-import levels from '../assets/json/levels.json';
+import Level from './Level';
 
 export default class LevelsScene {
-  constructor({ canvas, ctx, assets, state, sceneManager, levelsKey }) {
+  constructor({ canvas, ctx, assets, state, sceneManager, levels, levelsKey }) {
     this._canvas = canvas;
     this._ctx = ctx;
     this._assets = assets;
     this._state = state;
     this._sceneManager = sceneManager;
+    this._levels = levels;
     this._levelsKey = levelsKey;
 
     this._backButton = null;
@@ -49,8 +49,8 @@ export default class LevelsScene {
     this._levelsButtons.forEach(levelButton => {
       const isPressed = levelButton.isPressed(position);
       if (isPressed) {
-        const levelIndex = levelButton.getLevelIndex();
-        this._sceneManager.showCoreScene(this._levelsKey, levelIndex);
+        const level = levelButton.getLevel();
+        this._sceneManager.showCoreScene(level);
         return;
       }
     })
@@ -86,11 +86,11 @@ export default class LevelsScene {
   }
 
   _setLevelsButtons() {
-    const levelsGroup = levels[this._levelsKey];
+    const levels = this._levels.getLevelsByKey(this._levelsKey);
 
-    for (let i = 0; i < levelsGroup.length; i++) {
-      const col = i % 3;
-      const row = Math.floor(i / 3);
+    levels.forEach(({ id, targetMap, initialMap, moves }, index) => {
+      const col = index % 3;
+      const row = Math.floor(index / 3);
 
       const levelButton = new LevelButton({
         ctx: this._ctx,
@@ -99,12 +99,12 @@ export default class LevelsScene {
           x: LevelsScene.gridPositionX + col * (LevelButton.width + LevelsScene.gridGap),
           y: LevelsScene.gridPositionY + row * (LevelButton.height + LevelsScene.gridGap),
         },
-        levelIndex: i,
-        prevResult: this._state.getLevelResult(levelsGroup[i].id) || 0,
+        level: new Level({ key: this._levelsKey, index, id, targetMap, initialMap, moves }),
+        prevResult: this._state.getLevelResult(id) || 0,
       })
 
       this._levelsButtons.push(levelButton);
-    }
+    })
   }
 
   _initButton() {

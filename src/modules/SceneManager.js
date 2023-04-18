@@ -7,11 +7,12 @@ import CoreScene from './CoreScene';
 import ResultScene from './ResultScene';
 
 export default class SceneManager {
-	constructor({ canvas, ctx, assets, state }) {
+	constructor({ canvas, ctx, assets, state, levels }) {
 		this._canvas = canvas;
 		this._ctx = ctx;
 		this._assets = assets;
 		this._state = state;
+		this._levels = levels;
 
 		this._currentScene = null;
 		this._futureScene = null;
@@ -57,6 +58,7 @@ export default class SceneManager {
 			ctx: this._ctx,
 			assets: this._assets,
 			state: this._state,
+			levels: this._levels,
 			sceneManager: this,
 		}
 	}
@@ -101,12 +103,12 @@ export default class SceneManager {
 		this._futureScene = new LevelsScene({ ...this._getScenesCommonProps(), levelsKey });
 	}
 
-	showCoreScene(levelsKey, levelIndex) {
-		this._futureScene = new CoreScene({ ...this._getScenesCommonProps(), levelsKey, levelIndex });
+	showCoreScene(level) {
+		this._futureScene = new CoreScene({ ...this._getScenesCommonProps(), level });
 	}
 
-	showResultScene(movesCounter, levelResult, levelsKey, levelIndex) {
-		this._futureScene = new ResultScene({ ...this._getScenesCommonProps(), movesCounter, levelResult, levelsKey, levelIndex });
+	showResultScene(movesCounter, levelResult, level) {
+		this._futureScene = new ResultScene({ ...this._getScenesCommonProps(), movesCounter, levelResult, level });
 	}
 
 	static transitionDuration = 300;

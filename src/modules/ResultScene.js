@@ -2,22 +2,20 @@ import Draw from './Draw';
 import Text from './Text';
 import Button from './Button';
 import Color from './Color';
-import LevelController from './LevelController';
 import RatingPreview from './RatingPreview';
-
-import levels from '../assets/json/levels.json';
+import Level from './Level';
 
 export default class ResultScene {
-  constructor({ canvas, ctx, assets, state, sceneManager, movesCounter, levelResult, levelsKey, levelIndex }) {
+  constructor({ canvas, ctx, assets, state, levels, sceneManager, movesCounter, levelResult, level }) {
     this._canvas = canvas;
     this._ctx = ctx;
 		this._assets = assets;
 		this._state = state;
+    this._levels = levels;
     this._sceneManager = sceneManager;
     this._movesCounter = movesCounter;
     this._levelResult = levelResult;
-    this._levelsKey = levelsKey;
-    this._levelIndex = levelIndex;
+    this._level = level;
 
     this._ratingPreview = new RatingPreview({
       ctx: this._ctx,
@@ -74,14 +72,21 @@ export default class ResultScene {
     this._repeatButton.render();
   }
 
-  handleClick({ position }) {
-    if (this._continueButton.isPressed(position)) {
-      const nextLevelIndex = this._levelIndex + 1;
-      if (levels[this._levelsKey][nextLevelIndex]) this._sceneManager.showCoreScene(this._levelsKey, nextLevelIndex);
-      else this._sceneManager.showLevelsScene(this._levelsKey);
-    } else if (this._repeatButton.isPressed(position)) {
-      this._sceneManager.showCoreScene(this._levelsKey, this._levelIndex);
+  _showNextLevelOrLevelsMenu() {
+    const key = this._level.getKey();
+    const index = this._level.getIndex() + 1;
+    const nextLevel = this._levels.getLevelByKeyAndIndex(key, index);
+
+    if (nextLevel) {
+      const { id, targetMap, initialMap, moves } = nextLevel;
+      this._sceneManager.showCoreScene(new Level({ key, index, id, targetMap, initialMap, moves }));
     }
+    else this._sceneManager.showLevelsScene(key);
+  }
+
+  handleClick({ position }) {
+    if (this._continueButton.isPressed(position)) this._showNextLevelOrLevelsMenu();
+    else if (this._repeatButton.isPressed(position)) this._sceneManager.showCoreScene(this._level);
   }
 
   handleStartDragging() {
@@ -127,7 +132,7 @@ export default class ResultScene {
   _setLevelResultMarkup() {
     const levelResultMarkup = [];
 
-    for (let i = 0; i < LevelController.maxResult; i++) {
+    for (let i = 0; i < Level.maxResult; i++) {
       levelResultMarkup.push({
         icon: i < this._levelResult ? this._assets.get('star-yellow.png') : this._assets.get('star-blue.png'),
         position: {

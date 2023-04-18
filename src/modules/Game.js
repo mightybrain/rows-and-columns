@@ -1,6 +1,9 @@
 import Assets from './Assets';
+import Levels from './Levels';
 import State from './State';
 import SceneManager from './SceneManager';
+
+import levels from '../assets/json/levels.json';
 
 export default class Game {
 	constructor(canvas) {
@@ -9,12 +12,16 @@ export default class Game {
 		this._setRenderSize();
 
 		this._assets = new Assets();
+		this._levels = new Levels({
+			levels,
+		})
 		this._state = new State();
 
 		this._sceneManager = new SceneManager({
 			canvas: this._canvas,
 			ctx: this._ctx,
 			assets: this._assets,
+			levels: this._levels,
 			state: this._state,
 		});
 

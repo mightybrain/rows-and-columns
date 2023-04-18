@@ -1,6 +1,8 @@
 export default class Assets {
 	constructor() {
-		this._assets = {};
+		this._assets = {
+			
+		};
 		this._loaded = 0;
 	}
 

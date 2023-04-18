@@ -1,15 +1,15 @@
 import Color from './Color';
 import Draw from './Draw';
-import LevelController from './LevelController';
+import Level from './Level';
 
 export default class LevelButton {
-  constructor({ ctx, assets, position, levelIndex, prevResult }) {
+  constructor({ ctx, assets, position, level, prevResult }) {
     this._ctx = ctx;
     this._assets = assets;
     this._position = position;
-    this._levelIndex = levelIndex;
+    this._level = level;
 
-    this._levelLabel = this._levelIndex + 1;
+    this._levelLabel = this._level.getIndex() + 1;
     this._levelLabelPosition = {
       x: 0,
       y: 0,
@@ -45,7 +45,7 @@ export default class LevelButton {
 
     const prevResultMarkup = [];
 
-    for (let i = 0; i < LevelController.maxResult; i++) {
+    for (let i = 0; i < Level.maxResult; i++) {
       prevResultMarkup.push({
         icon: i < this._prevResult ? this._assets.get('star-yellow.png') : this._assets.get('star-green.png'),
         position: {
@@ -63,8 +63,8 @@ export default class LevelButton {
     this._levelLabelPosition.y = this._position.y + LevelButton.padding + LevelButton.fontSize - LevelButton.lineHeight / 4;
   }
 
-  getLevelIndex() {
-    return this._levelIndex;
+  getLevel() {
+    return this._level;
   }
 
   static width = 158;

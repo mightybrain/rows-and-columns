@@ -1,18 +1,14 @@
 import Tile from './Tile';
 import Cell from './Cell';
-import Random from './Random';
 import TileScaleAnimation from './TileScaleAnimation';
 
 export default class Field {
-  constructor({ ctx, assets, state, sceneManager, levelsKey, levelIndex, levelId, levelController }) {
+  constructor({ ctx, assets, state, sceneManager, level }) {
     this._ctx = ctx;
     this._assets = assets;
     this._state = state;
     this._sceneManager = sceneManager;
-    this._levelsKey = levelsKey;
-    this._levelIndex = levelIndex;
-    this._levelId = levelId;
-    this._levelController = levelController;
+    this._level = level;
 
     this._columnWidth = 0;
     this._rowHeight = 0;
@@ -122,16 +118,16 @@ export default class Field {
   }
 
   async _handleDraggingResult() {
-    this._levelComplete = this._levelController.isMatch(this._map);
+    this._levelComplete = this._level.match(this._map);
     if (!this._levelComplete) return;
 
     this._startLevelCompliteAnimation();
 
-    const levelResult = this._levelController.getLevelResult(this._movesCounter);
-    await this._state.setLevelResult(this._levelId, levelResult);
+    const levelResult = this._level.getResult(this._movesCounter);
+    await this._state.setLevelResult(this._level.getId(), levelResult);
 
     setTimeout(() => {
-      this._sceneManager.showResultScene(this._movesCounter, levelResult, this._levelsKey, this._levelIndex);
+      this._sceneManager.showResultScene(this._movesCounter, levelResult, this._level);
     }, 1500)
   }
 
@@ -237,7 +233,7 @@ export default class Field {
   }
 
   _setMetrics() {
-    const { x: xLength, y: yLength } = this._levelController.getMapLengths();
+    const { x: xLength, y: yLength } = this._level.getMapLengths();
 
     this._columnWidth = (Field.width - Field.gap * (xLength - 1)) / xLength;
     this._rowHeight = (Field.height - Field.gap * (yLength - 1)) / yLength;
@@ -247,7 +243,7 @@ export default class Field {
   }
 
   _setMap() {
-    const { x: xLength, y: yLength } = this._levelController.getMapLengths();
+    const { x: xLength, y: yLength } = this._level.getMapLengths();
 
     for (let y = 0; y < yLength; y++) {
 
@@ -262,7 +258,7 @@ export default class Field {
   }
 
   _setTiles() {
-    let colors = this._levelController.getLevelColors();
+    const colors = this._level.getColors();
 
     this._map.forEach(row => {
       row.forEach(cell => {
