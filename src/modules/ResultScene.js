@@ -4,17 +4,18 @@ import Button from './Button';
 import Color from './Color';
 import RatingPreview from './RatingPreview';
 import Level from './Level';
+import Levels from './Levels';
 
 export default class ResultScene {
-  constructor({ canvas, ctx, assets, state, levels, sceneManager, movesCounter, levelResult, level }) {
+  constructor({ canvas, ctx, assets, state, levels, sceneManager, moves, score, level }) {
     this._canvas = canvas;
     this._ctx = ctx;
 		this._assets = assets;
 		this._state = state;
     this._levels = levels;
     this._sceneManager = sceneManager;
-    this._movesCounter = movesCounter;
-    this._levelResult = levelResult;
+    this._moves = moves;
+    this._score = score;
     this._level = level;
 
     this._ratingPreview = new RatingPreview({
@@ -26,20 +27,20 @@ export default class ResultScene {
     this._titleMarkup = [];
     this._setTitleMarkup();
 
-    this._movesCounterHintPosition = {
+    this._movesHintPosition = {
       x: 0,
       y: 0
     };
-    this._setMovesCounterHintPosition();
+    this._setMovesHintPosition();
 
-    this._movesCounterPosition = {
+    this._movesPosition = {
       x: 0,
       y: 0,
     };
-    this._setMovesCounterPosition();
+    this._setMovesPosition();
 
-    this._levelResultMarkup = [];
-    this._setLevelResultMarkup();
+    this._scoreMarkup = [];
+    this._setLevelScoreMarkup();
 
     this._continueButton = null;
     this._repeatButton = null;
@@ -60,11 +61,11 @@ export default class ResultScene {
       Draw.text(this._ctx, position.x, position.y, string, ResultScene.titleFontSize, Color.white.key);
     })
 
-    Draw.text(this._ctx, this._movesCounterHintPosition.x, this._movesCounterHintPosition.y, ResultScene.movesCounterHintLabel, ResultScene.movesCounterHintFontSize, Color.yellow.key);
+    Draw.text(this._ctx, this._movesHintPosition.x, this._movesHintPosition.y, ResultScene.movesHintLabel, ResultScene.movesHintFontSize, Color.yellow.key);
 
-    Draw.text(this._ctx, this._movesCounterPosition.x, this._movesCounterPosition.y, this._movesCounter, ResultScene.movesCounterFontSize, Color.yellow.key);
+    Draw.text(this._ctx, this._movesPosition.x, this._movesPosition.y, this._moves, ResultScene.movesFontSize, Color.yellow.key);
 
-    this._levelResultMarkup.forEach(({ icon, position }) => {
+    this._scoreMarkup.forEach(({ icon, position }) => {
       Draw.image(this._ctx, position.x, position.y, ResultScene.iconWidth, ResultScene.iconHeight, icon);
     })
 
@@ -101,15 +102,15 @@ export default class ResultScene {
 
   }
 
-  _setMovesCounterHintPosition() {
-    this._movesCounterHintPosition.x = ResultScene.movesCounterHintPositionX;
-    this._movesCounterHintPosition.y = ResultScene.movesCounterHintPositionY + ResultScene.movesCounterHintFontSize;
+  _setMovesHintPosition() {
+    this._movesHintPosition.x = ResultScene.movesHintPositionX;
+    this._movesHintPosition.y = ResultScene.movesHintPositionY + ResultScene.movesHintFontSize;
   }
 
-  _setMovesCounterPosition() {
-    const { textWidth } = Text.calcTextMetrics(this._ctx, this._movesCounter, ResultScene.movesCounterFontSize);
-    this._movesCounterPosition.x = this._canvas.width / 2 - textWidth / 2;
-    this._movesCounterPosition.y = ResultScene.movesCounterPositionY + ResultScene.movesCounterFontSize;
+  _setMovesPosition() {
+    const { textWidth } = Text.calcTextMetrics(this._ctx, this._moves, ResultScene.movesFontSize);
+    this._movesPosition.x = this._canvas.width / 2 - textWidth / 2;
+    this._movesPosition.y = ResultScene.movesPositionY + ResultScene.movesFontSize;
   }
 
   _setTitleMarkup() {
@@ -129,12 +130,12 @@ export default class ResultScene {
     })
   }
 
-  _setLevelResultMarkup() {
-    const levelResultMarkup = [];
+  _setLevelScoreMarkup() {
+    const scoreMarkup = [];
 
-    for (let i = 0; i < Level.maxResult; i++) {
-      levelResultMarkup.push({
-        icon: i < this._levelResult ? this._assets.get('star-yellow.png') : this._assets.get('star-blue.png'),
+    for (let i = 0; i < Levels.maxScore; i++) {
+      scoreMarkup.push({
+        icon: i < this._score ? this._assets.get('star-yellow.png') : this._assets.get('star-blue.png'),
         position: {
           x: ResultScene.ratingPositionX + i * (ResultScene.iconWidth + ResultScene.iconGap),
           y: ResultScene.ratingPositionY,
@@ -142,7 +143,7 @@ export default class ResultScene {
       });
     }
 
-    this._levelResultMarkup = levelResultMarkup;
+    this._scoreMarkup = scoreMarkup;
   }
 
   _initButtons() {
@@ -178,13 +179,13 @@ export default class ResultScene {
   static titleLineHeight = 76;
   static titlePositionY = 251;
 
-  static movesCounterHintLabel = 'Ходов:';
-  static movesCounterHintFontSize = 48;
-  static movesCounterHintPositionX = 267;
-  static movesCounterHintPositionY = 483;
+  static movesHintLabel = 'Ходов:';
+  static movesHintFontSize = 48;
+  static movesHintPositionX = 267;
+  static movesHintPositionY = 483;
 
-  static movesCounterFontSize = 96;
-  static movesCounterPositionY = 541;
+  static movesFontSize = 96;
+  static movesPositionY = 541;
 
   static ratingPositionX = 221;
   static ratingPositionY = 667;

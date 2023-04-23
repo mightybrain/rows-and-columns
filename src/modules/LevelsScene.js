@@ -100,7 +100,8 @@ export default class LevelsScene {
           y: LevelsScene.gridPositionY + row * (LevelButton.height + LevelsScene.gridGap),
         },
         level: new Level({ key: this._levelsKey, index, id, targetMap, initialMap, moves }),
-        prevResult: this._state.getLevelResult(id) || 0,
+        prevScore: this._state.getLevelPrevScore(id) || 0,
+        prevMoves: this._state.getLevelPrevMoves(id) || 0,
       })
 
       this._levelsButtons.push(levelButton);
@@ -123,14 +124,14 @@ export default class LevelsScene {
   }
 
   static title = 'Выберите<br>уровень';
-  static titlePositionY = 162;
+  static titlePositionY = 153;
   static titleFontSize = 72;
   static titleLineHeight = 76;
 
-  static gridWidth = 574;
-  static gridGap = 50;
-  static gridPositionX = 63;
-  static gridPositionY = 394;
+  static gridWidth = 600;
+  static gridGap = 30;
+  static gridPositionX = 50;
+  static gridPositionY = 385;
 
   static backButtonLabel = 'Назад';
   static backButtonPositionY = 19;

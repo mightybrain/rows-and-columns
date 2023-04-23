@@ -3,10 +3,11 @@ import Cell from './Cell';
 import TileScaleAnimation from './TileScaleAnimation';
 
 export default class Field {
-  constructor({ ctx, assets, state, sceneManager, level }) {
+  constructor({ ctx, assets, state, levels, sceneManager, level }) {
     this._ctx = ctx;
     this._assets = assets;
     this._state = state;
+    this._levels = levels;
     this._sceneManager = sceneManager;
     this._level = level;
 
@@ -29,7 +30,7 @@ export default class Field {
     this._detachedTiles = [];
     this._levelComplete = false;
 
-    this._movesCounter = 0;
+    this._moves = 0;
   }
 
   update(time) {
@@ -96,7 +97,7 @@ export default class Field {
       });
     }
 
-    if (tilesWasUpdated) this._movesCounter += 1;
+    if (tilesWasUpdated) this._moves += 1;
 
     this._startDraggingPosition = null;
     this._startDraggingCoords = null;
@@ -123,11 +124,11 @@ export default class Field {
 
     this._startLevelCompliteAnimation();
 
-    const levelResult = this._level.getResult(this._movesCounter);
-    await this._state.setLevelResult(this._level.getId(), levelResult);
+    const score = this._levels.getLevelScore(this._moves, this._level.getId());
+    await this._state.setLevelResult(this._level.getId(), this._moves, score);
 
     setTimeout(() => {
-      this._sceneManager.showResultScene(this._movesCounter, levelResult, this._level);
+      this._sceneManager.showResultScene(this._moves, score, this._level);
     }, 1500)
   }
 

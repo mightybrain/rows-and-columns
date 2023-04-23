@@ -107,8 +107,8 @@ export default class SceneManager {
 		this._futureScene = new CoreScene({ ...this._getScenesCommonProps(), level });
 	}
 
-	showResultScene(movesCounter, levelResult, level) {
-		this._futureScene = new ResultScene({ ...this._getScenesCommonProps(), movesCounter, levelResult, level });
+	showResultScene(moves, score, level) {
+		this._futureScene = new ResultScene({ ...this._getScenesCommonProps(), moves, score, level });
 	}
 
 	static transitionDuration = 300;

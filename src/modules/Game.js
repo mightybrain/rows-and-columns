@@ -15,7 +15,9 @@ export default class Game {
 		this._levels = new Levels({
 			levels,
 		})
-		this._state = new State();
+		this._state = new State({
+			levels: this._levels,
+		});
 
 		this._sceneManager = new SceneManager({
 			canvas: this._canvas,
@@ -35,7 +37,7 @@ export default class Game {
 	async _startGame() {
 		await document.fonts.load('1px Nunito')
 		await this._assets.load();
-		await this._state.loadPlayerStats();
+		//await this._state.loadPlayerStats();
 
 		this._sceneManager.showOpenScene();
 

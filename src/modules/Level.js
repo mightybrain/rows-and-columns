@@ -44,11 +44,4 @@ export default class Level {
       .flat()
       .map(id => Tile.colors.find(color => color.id === id));
   }
-
-  getResult(moves) {
-    return moves <= this._moves ? Level.maxResult : moves <= this._moves * 2 ? Level.maxResult - 1 : Level.minResult;
-  }
-
-  static maxResult = 3;
-  static minResult = 1;
 }

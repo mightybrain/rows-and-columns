@@ -5,11 +5,12 @@ import Color from './Color';
 import Button from './Button';
 
 export default class CoreScene {
-	constructor({ canvas, ctx, assets, state, sceneManager, level }) {
+	constructor({ canvas, ctx, assets, state, levels, sceneManager, level }) {
 		this._canvas = canvas;
 		this._ctx = ctx;
 		this._assets = assets;
 		this._state = state;
+		this._levels = levels;
 		this._sceneManager = sceneManager;
 
     this._backButton = null;
@@ -26,6 +27,7 @@ export default class CoreScene {
 			ctx: this._ctx,
 			assets: this._assets,
 			state: this._state,
+			levels: this._levels,
 			sceneManager: this._sceneManager,
 			level: this._level,
 		});

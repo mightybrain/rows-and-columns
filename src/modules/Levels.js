@@ -8,8 +8,9 @@ export default class Levels {
   }
 
   getLevelById(id) {
-    for (let key in levels) {
-      const level = levels[key].find(item => item.id === id);
+    id = +id;
+    for (let key in this._levels) {
+      const level = this._levels[key].find(item => item.id === id);
       if (level) return level;
     }
   }
@@ -21,4 +22,12 @@ export default class Levels {
   getLevelsByKey(key) {
     return this._levels[key];
   }
+
+  getLevelScore(moves, levelId) {
+    const level = this.getLevelById(levelId);
+    return moves <= level.moves ? Levels.maxScore : moves <= level.moves * 2 ? Levels.maxScore - 1 : Levels.minScore;
+  }
+
+  static maxScore = 3;
+  static minScore = 1;
 }

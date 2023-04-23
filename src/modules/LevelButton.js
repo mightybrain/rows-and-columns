@@ -1,9 +1,9 @@
 import Color from './Color';
 import Draw from './Draw';
-import Level from './Level';
+import Levels from './Levels';
 
 export default class LevelButton {
-  constructor({ ctx, assets, position, level, prevResult }) {
+  constructor({ ctx, assets, position, level, prevScore, prevMoves }) {
     this._ctx = ctx;
     this._assets = assets;
     this._position = position;
@@ -16,21 +16,34 @@ export default class LevelButton {
     };
     this._setLevelLabelPosition();
 
-    this._prevResult = prevResult;
-    this._prevResultMarkup = [];
-    this._setPrevResultMarkup();
+    this._prevMoves = prevMoves;
+    this._prevMovesPosition = {
+      x: 0,
+      y: 0,
+    };
+    this._setPrevMovesPosition();
 
-    this._color = this._prevResult ? Color.green : Color.blueNight;
+    this._prevScore = prevScore;
+    this._prevScoreMarkup = [];
+    this._setPrevScoreMarkup();
+
+    this._color = this._prevScore ? Color.green : Color.blueNight;
   }
 
   render() {
     Draw.roundedRect(this._ctx, this._position.x, this._position.y, LevelButton.width, LevelButton.height, LevelButton.radius, this._color.key);
     
-    Draw.text(this._ctx, this._levelLabelPosition.x, this._levelLabelPosition.y, this._levelLabel, LevelButton.fontSize, Color.white.key);
+    Draw.text(this._ctx, this._levelLabelPosition.x, this._levelLabelPosition.y, this._levelLabel, LevelButton.levelLabelFontSize, Color.white.key);
 
-    this._prevResultMarkup.forEach(({ icon, position }) => {
-      Draw.image(this._ctx, position.x, position.y, LevelButton.iconWidth, LevelButton.iconHeight, icon);
-    })
+    if (this._prevMoves !== 0) {
+      Draw.text(this._ctx, this._prevMovesPosition.x, this._prevMovesPosition.y, this._prevMoves, LevelButton.prevMovesFontSize, Color.white.key);
+    }
+
+    if (this._prevScore !== 0) {
+      this._prevScoreMarkup.forEach(({ icon, position }) => {
+        Draw.image(this._ctx, position.x, position.y, LevelButton.iconWidth, LevelButton.iconHeight, icon);
+      })
+    } 
   }
 
   isPressed(clickPosition) {
@@ -40,14 +53,12 @@ export default class LevelButton {
     );
   }
 
-  _setPrevResultMarkup() {
-    if (!this._prevResult) return;
+  _setPrevScoreMarkup() {
+    const prevScoreMarkup = [];
 
-    const prevResultMarkup = [];
-
-    for (let i = 0; i < Level.maxResult; i++) {
-      prevResultMarkup.push({
-        icon: i < this._prevResult ? this._assets.get('star-yellow.png') : this._assets.get('star-green.png'),
+    for (let i = 0; i < Levels.maxScore; i++) {
+      prevScoreMarkup.push({
+        icon: i < this._prevScore ? this._assets.get('star-yellow.png') : this._assets.get('star-green.png'),
         position: {
           x: this._position.x + LevelButton.padding + i * (LevelButton.iconWidth + LevelButton.iconGap),
           y: this._position.y + LevelButton.height - LevelButton.padding - LevelButton.iconHeight,
@@ -55,27 +66,36 @@ export default class LevelButton {
       });
     }
 
-    this._prevResultMarkup = prevResultMarkup;
+    this._prevScoreMarkup = prevScoreMarkup;
+  }
+
+  _setPrevMovesPosition() {
+    this._prevMovesPosition.x = this._position.x + LevelButton.padding;
+    this._prevMovesPosition.y = this._position.y + LevelButton.height - LevelButton.padding - LevelButton.iconHeight - LevelButton.prevMovesMarginBottom - LevelButton.prevMovesLineHeight + LevelButton.prevMovesFontSize;
   }
 
   _setLevelLabelPosition() {
     this._levelLabelPosition.x = this._position.x + LevelButton.padding;
-    this._levelLabelPosition.y = this._position.y + LevelButton.padding + LevelButton.fontSize - LevelButton.lineHeight / 4;
+    this._levelLabelPosition.y = this._position.y + LevelButton.padding + LevelButton.levelLabelFontSize - LevelButton.levelLabelLineHeight / 4;
   }
 
   getLevel() {
     return this._level;
   }
 
-  static width = 158;
-  static height = 158;
+  static width = 180;
+  static height = 180;
   static radius = 46;
   static padding = 24;
 
-  static fontSize = 48;
-  static lineHeight = 52;
+  static levelLabelFontSize = 48;
+  static levelLabelLineHeight = 52;
+
+  static prevMovesFontSize = 32;
+  static prevMovesLineHeight = 36;
+  static prevMovesMarginBottom = 4;
 
   static iconWidth = 30;
   static iconHeight = 29;
-  static iconGap = 10;
+  static iconGap = 6;
 }
