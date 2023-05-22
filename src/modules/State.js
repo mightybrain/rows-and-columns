@@ -1,4 +1,4 @@
-import YSDK from './YSDK';
+//import YSDK from './YSDK';
 
 export default class State {
 	constructor({ levels }) {
@@ -19,14 +19,14 @@ export default class State {
 	}
 
 	async loadPlayerStats() {
-		const levelsMoves = await YSDK.getPlayerStats();
+		/*const levelsMoves = await YSDK.getPlayerStats();
 		if (levelsMoves) {
 			this._levelsMoves = levelsMoves;
 
 			for (let id in levelsMoves) {
 				this._levelsScores[id] = this._levels.getLevelScore(levelsMoves[id], id);
 			}
-		}
+		}*/
 	}
 
 	getRating() {

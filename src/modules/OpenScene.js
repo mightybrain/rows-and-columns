@@ -151,19 +151,19 @@ export default class OpenScene {
   static title = 'Rows<br>and<br>Columns';
   static titleFontSize = 96;
   static titleLineHeight = 100;
-  static titlePositionY = 240;
+  static titlePositionY = 131;
 
   static beginnerButtonLabel = 'Начинающий';
   static beginnerButtonWidth = 300;
   static beginnerButtonPositionX = 200;
-  static beginnerButtonPositionY = 620;
+  static beginnerButtonPositionY = 501;
 
   static mediumUnlockRating = 24;
   static mediumButtonLabel = 'Средний';
   static mediumButtonWidth = 222;
   static mediumLockedButtonWidth = 321;
   static mediumButtonPositionX = 239;
-  static mediumButtonPositionY = 724;
+  static mediumButtonPositionY = 605;
   static mediumLockedButtonPositionX = 190;
 
   static hardUnlockRating = 52;
@@ -171,11 +171,11 @@ export default class OpenScene {
   static hardButtonWidth = 237;
   static hardLockedButtonWidth = 336;
   static hardButtonPositionX = 232;
-  static hardButtonPositionY = 828;
+  static hardButtonPositionY = 709;
   static hardLockedButtonPositionX = 182;
 
   static aboutButtonLabel = 'Об игре';
   static aboutButtonWidth = 210;
   static aboutButtonPositionX = 245;
-  static aboutButtonPositionY = 932;
+  static aboutButtonPositionY = 813;
 }

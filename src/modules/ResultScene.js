@@ -177,18 +177,18 @@ export default class ResultScene {
   static title = 'Уровень<br>пройден!';
   static titleFontSize = 72;
   static titleLineHeight = 76;
-  static titlePositionY = 251;
+  static titlePositionY = 152;
 
   static movesHintLabel = 'Ходов:';
   static movesHintFontSize = 48;
   static movesHintPositionX = 267;
-  static movesHintPositionY = 483;
+  static movesHintPositionY = 374;
 
   static movesFontSize = 96;
-  static movesPositionY = 541;
+  static movesPositionY = 432;
 
   static ratingPositionX = 221;
-  static ratingPositionY = 667;
+  static ratingPositionY = 558;
 
   static iconWidth = 73;
   static iconHeight = 70;
@@ -196,12 +196,12 @@ export default class ResultScene {
 
   static continueButtonLabel = 'Продолжить';
   static continueButtonPositionX = 206;
-  static continueButtonPositionY = 817;
+  static continueButtonPositionY = 698;
   static continueButtonWidth = 289;
 
   static repeatButtonLabel = 'Повторить уровень';
   static repeatButtonPositionX = 151;
-  static repeatButtonPositionY = 921;
+  static repeatButtonPositionY = 802;
   static repeatButtonWidth = 399;
 
   static buttonsHeight = 74;

@@ -83,16 +83,16 @@ export default class LevelButton {
     return this._level;
   }
 
-  static width = 180;
-  static height = 180;
-  static radius = 46;
-  static padding = 24;
+  static width = 150;
+  static height = 150;
+  static radius = 30;
+  static padding = 19;
 
   static levelLabelFontSize = 48;
   static levelLabelLineHeight = 52;
 
-  static prevMovesFontSize = 32;
-  static prevMovesLineHeight = 36;
+  static prevMovesFontSize = 28;
+  static prevMovesLineHeight = 32;
   static prevMovesMarginBottom = 4;
 
   static iconWidth = 30;

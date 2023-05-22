@@ -18,8 +18,8 @@ export default class LevelsScene {
     this._backButton = null;
     this._initButton();
 
-    this._titleMarkup = [];
-    this._setTitleMarkup();
+    this._titlePosition = [];
+    this._setTitlePosition();
 
     this._levelsButtons = [];
     this._setLevelsButtons();
@@ -34,9 +34,7 @@ export default class LevelsScene {
 
     this._backButton.render();
 
-    this._titleMarkup.forEach(({ string, position }) => {
-      Draw.text(this._ctx, position.x, position.y, string, LevelsScene.titleFontSize, Color.white.key);
-    })
+    Draw.text(this._ctx, this._titlePosition.x, this._titlePosition.y, LevelsScene.title, LevelsScene.titleFontSize, Color.white.key);
 
     this._levelsButtons.forEach(button => {
       button.render();
@@ -68,21 +66,11 @@ export default class LevelsScene {
 
   }
 
-  _setTitleMarkup() {
-    const title = [LevelsScene.title.split('<br>')];
-    const titleMetrics = Text.calcMultistringTextMetrics(this._ctx, title, LevelsScene.titleFontSize, LevelsScene.titleLineHeight);
+  _setTitlePosition() {
+    const { textWidth } = Text.calcTextMetrics(this._ctx, LevelsScene.title, LevelsScene.titleFontSize);
 
-    this._titleMarkup = titleMetrics.map(item => {
-      const { string, positionY, width } = item;
-
-      return {
-        string,
-        position: {
-          x: this._canvas.width / 2 - width / 2,
-          y: LevelsScene.titlePositionY + positionY,
-        }
-      }
-    })
+    this._titlePosition.x = this._canvas.width / 2 - textWidth / 2;
+    this._titlePosition.y = LevelsScene.titlePositionY + LevelsScene.titleFontSize;
   }
 
   _setLevelsButtons() {
@@ -123,15 +111,15 @@ export default class LevelsScene {
     })
   }
 
-  static title = 'Выберите<br>уровень';
-  static titlePositionY = 153;
+  static title = 'Уровни';
+  static titlePositionY = 144;
   static titleFontSize = 72;
   static titleLineHeight = 76;
 
-  static gridWidth = 600;
-  static gridGap = 30;
-  static gridPositionX = 50;
-  static gridPositionY = 385;
+  static gridWidth = 502;
+  static gridGap = 26;
+  static gridPositionX = 99;
+  static gridPositionY = 290;
 
   static backButtonLabel = 'Назад';
   static backButtonPositionY = 19;
